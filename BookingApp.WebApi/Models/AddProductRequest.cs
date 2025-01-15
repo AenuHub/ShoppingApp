@@ -7,6 +7,7 @@ namespace ShoppingApp.WebApi.Models
         [Required]
         public string ProductName { get; set; }
         [Required]
+        [Range(0.01, double.MaxValue)]
         public decimal Price { get; set; }
         [Required]
         [Range(0, 500)]

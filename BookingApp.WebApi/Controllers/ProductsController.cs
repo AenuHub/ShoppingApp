@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ShoppingApp.Business.Operations.Product;
 using ShoppingApp.Business.Operations.Product.Dtos;
 using ShoppingApp.WebApi.Models;
@@ -17,6 +18,7 @@ namespace ShoppingApp.WebApi.Controllers
         }
 
         [HttpPost("add-product")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddProduct(AddProductRequest request)
         {
             var addProductDto = new AddProductDto
