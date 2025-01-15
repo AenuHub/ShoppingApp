@@ -58,17 +58,17 @@ namespace ShoppingApp.Business.Operations.User
             }
         }
 
-        public Task<ServiceMessage<UserInfoDto>> LoginUserAsync(LoginUserDto loginUserDto)
+        public async Task<ServiceMessage<UserInfoDto>> LoginUserAsync(LoginUserDto loginUserDto)
         {
             var userEntity = _userRepository.Get(u => u.Email.ToLower() == loginUserDto.Email.ToLower());
 
             if (userEntity == null || _protection.Decrypt(userEntity.Password) != loginUserDto.Password)
             {
-                return Task.FromResult(new ServiceMessage<UserInfoDto>
+                return new ServiceMessage<UserInfoDto>
                 {
                     IsSuccess = false,
                     Message = "Email or password is incorrect"
-                });
+                };
             }
 
             var userInfoDto = new UserInfoDto
@@ -79,11 +79,11 @@ namespace ShoppingApp.Business.Operations.User
                 Role = userEntity.Role
             };
 
-            return Task.FromResult(new ServiceMessage<UserInfoDto>
+            return new ServiceMessage<UserInfoDto>
             {
                 IsSuccess = true,
                 Data = userInfoDto
-            });
+            };
         }
     }
 }

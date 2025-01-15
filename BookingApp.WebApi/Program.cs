@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ShoppingApp.Business.DataProtection;
+using ShoppingApp.Business.Operations.Product;
 using ShoppingApp.Business.Operations.User;
 using ShoppingApp.Data.Context;
 using ShoppingApp.Data.Repositories;
@@ -66,6 +67,7 @@ builder.Services.AddDbContext<ShoppingAppDbContext>(options =>
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserManager>();
+builder.Services.AddScoped<IProductService, ProductManager>();
 
 var app = builder.Build();
 
