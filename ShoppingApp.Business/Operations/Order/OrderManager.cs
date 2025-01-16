@@ -24,8 +24,8 @@ namespace ShoppingApp.Business.Operations.Order
 
         public async Task<ServiceMessage> CreateOrderAsync(CreateOrderDto createOrderDto)
         {
-            var totalAmount = createOrderDto.ProductIds
-                .Select(p => _productRepository.GetById(p).Price)
+            var totalAmount = createOrderDto.OrderProducts
+                .Select(op => _productRepository.GetById(op.Id).Price * op.Quantity)
                 .Sum();
 
             await _unitOfWork.BeginTransactionAsync();
@@ -48,12 +48,13 @@ namespace ShoppingApp.Business.Operations.Order
                 throw new Exception("An error occurred while creating the order.");
             }
 
-            foreach (var productId in createOrderDto.ProductIds)
+            foreach (var product in createOrderDto.OrderProducts)
             {
                 var orderProduct = new OrderProductEntity
                 {
                     OrderId = orderEntity.Id,
-                    ProductId = productId
+                    ProductId = product.Id,
+                    Quantity = product.Quantity
                 };
 
                 _orderProductRepository.Add(orderProduct);
@@ -92,10 +93,11 @@ namespace ShoppingApp.Business.Operations.Order
                 OrderDate = order.OrderDate,
                 TotalAmount = order.TotalAmount,
                 CustomerName = $"{order.Customer.FirstName} {order.Customer.LastName}",
-                OrderProducts = order.OrderProducts.Select(op => new OrderProductDto
+                OrderProducts = order.OrderProducts.Select(op => new OrderProductInfoDto
                 {
                     Id = op.ProductId,
-                    ProductName = op.Product.ProductName
+                    ProductName = op.Product.ProductName,
+                    Quantity = op.Quantity
                 }).ToList()
             };
 
@@ -116,14 +118,58 @@ namespace ShoppingApp.Business.Operations.Order
                 OrderDate = order.OrderDate,
                 TotalAmount = order.TotalAmount,
                 CustomerName = $"{order.Customer.FirstName} {order.Customer.LastName}",
-                OrderProducts = order.OrderProducts.Select(op => new OrderProductDto
+                OrderProducts = order.OrderProducts.Select(op => new OrderProductInfoDto
                 {
                     Id = op.ProductId,
-                    ProductName = op.Product.ProductName
+                    ProductName = op.Product.ProductName,
+                    Quantity = op.Quantity
                 }).ToList()
             }).ToList();
 
             return orderInfos;
+        }
+
+        public async Task<ServiceMessage> UpdateOrderAsync(int id, UpdateOrderDto updateOrderDto)
+        {
+            var order = await _orderRepository.GetAll(o => o.Id == id).FirstOrDefaultAsync();
+            if (order == null)
+            {
+                return new ServiceMessage
+                {
+                    IsSuccess = false,
+                    Message = $"Order with id: {id} is not found."
+                };
+            }
+
+            var totalAmount = updateOrderDto.OrderProducts
+                .Select(op => _productRepository.GetById(op.Id))
+                .Where(product => product != null)
+                .Select(product => product.Price)
+                .Sum();
+
+            order.TotalAmount = totalAmount;
+            order.CustomerId = updateOrderDto.CustomerId;
+            order.OrderProducts = updateOrderDto.OrderProducts.Select(op => new OrderProductEntity
+            {
+                OrderId = order.Id,
+                ProductId = op.Id,
+            }).ToList();
+
+            _orderRepository.Update(order);
+
+            try
+            {
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw new Exception("An error occurred while updating the order.");
+            }
+
+            return new ServiceMessage
+            {
+                IsSuccess = true
+            };
         }
     }
 }

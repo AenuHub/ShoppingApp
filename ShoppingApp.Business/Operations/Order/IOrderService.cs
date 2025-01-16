@@ -8,5 +8,6 @@ namespace ShoppingApp.Business.Operations.Order
         Task<ServiceMessage> CreateOrderAsync(CreateOrderDto createOrderDto);
         Task<OrderInfoDto> GetOrderAsync(int id);
         Task<List<OrderInfoDto>> GetAllOrdersAsync();
+        Task<ServiceMessage> UpdateOrderAsync(int id, UpdateOrderDto updateOrderDto);
     }
 }

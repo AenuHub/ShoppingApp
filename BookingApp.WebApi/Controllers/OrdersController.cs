@@ -41,11 +41,27 @@ namespace ShoppingApp.WebApi.Controllers
                 OrderDate = request.OrderDate,
                 TotalAmount = request.TotalAmount,
                 CustomerId = request.CustomerId,
-                ProductIds = request.ProductIds
+                OrderProducts = (ICollection<CreateOrderProductDto>)request.OrderProducts
             };
 
             var result = await _orderService.CreateOrderAsync(createOrderDto);
             return (result.IsSuccess) ? Ok() : BadRequest(result.Message);
+        }
+
+        [HttpPatch("update-order/{id}")]
+        public async Task<IActionResult> UpdateOrder(int id, UpdateOrderRequest request)
+        {
+            var updateOrderDto = new UpdateOrderDto
+            {
+                Id = request.Id,
+                TotalAmount = request.TotalAmount,
+                CustomerId = request.CustomerId,
+                OrderProducts = request.OrderProducts
+            };
+
+            var result = await _orderService.UpdateOrderAsync(id, updateOrderDto);
+            if (!result.IsSuccess) return BadRequest(result.Message);
+            return Ok();
         }
     }
 }
