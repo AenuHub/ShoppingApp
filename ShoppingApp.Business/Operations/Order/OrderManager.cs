@@ -101,5 +101,29 @@ namespace ShoppingApp.Business.Operations.Order
 
             return orderInfo;
         }
+
+        public async Task<List<OrderInfoDto>> GetAllOrdersAsync()
+        {
+            var orders = await _orderRepository.GetAll()
+                .Include(o => o.Customer)
+                .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                .ToListAsync();
+
+            var orderInfos = orders.Select(order => new OrderInfoDto
+            {
+                Id = order.Id,
+                OrderDate = order.OrderDate,
+                TotalAmount = order.TotalAmount,
+                CustomerName = $"{order.Customer.FirstName} {order.Customer.LastName}",
+                OrderProducts = order.OrderProducts.Select(op => new OrderProductDto
+                {
+                    Id = op.ProductId,
+                    ProductName = op.Product.ProductName
+                }).ToList()
+            }).ToList();
+
+            return orderInfos;
+        }
     }
 }

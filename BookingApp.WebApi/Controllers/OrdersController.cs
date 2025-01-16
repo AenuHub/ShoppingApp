@@ -25,6 +25,12 @@ namespace ShoppingApp.WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpGet("all-orders")]
+        public async Task<IActionResult> GetAllOrders()
+        {
+            var result = await _orderService.GetAllOrdersAsync();
+            return Ok(result);
+        }
 
         [HttpPost("create-order")]
         [Authorize(Roles = "Customer")]
