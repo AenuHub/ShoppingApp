@@ -18,14 +18,16 @@ namespace ShoppingApp.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult> GetOrder(int id)
         {
-            var result = await _orderService.GetOrderAsync(id);
+            var result = await _orderService.GetOrderInfoAsync(id);
             if (result is null) return NotFound();
             return Ok(result);
         }
 
         [HttpGet("all-orders")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllOrders()
         {
             var result = await _orderService.GetAllOrdersAsync();
@@ -36,7 +38,7 @@ namespace ShoppingApp.WebApi.Controllers
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult> CreateOrder(CreateOrderRequest request)
         {
-            var createOrderDto = new CreateOrderDto
+            var createOrderDto = new OrderDto
             {
                 OrderDate = request.OrderDate,
                 TotalAmount = request.TotalAmount,
@@ -48,7 +50,8 @@ namespace ShoppingApp.WebApi.Controllers
             return (result.IsSuccess) ? Ok() : BadRequest(result.Message);
         }
 
-        [HttpPatch("update-order/{id}")]
+        [HttpPut("update-order/{id}")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult> UpdateOrder(int id, UpdateOrderRequest request)
         {
             var updateOrderDto = new UpdateOrderDto
@@ -61,6 +64,36 @@ namespace ShoppingApp.WebApi.Controllers
 
             var result = await _orderService.UpdateOrderAsync(id, updateOrderDto);
             if (!result.IsSuccess) return BadRequest(result.Message);
+            return Ok();
+        }
+
+        [HttpPatch("patch-order/{id}")]
+        [Authorize(Roles = "Customer,Admin")]
+        public async Task<IActionResult> PatchOrder(int id, DateTime date)
+        {
+            var order = await _orderService.GetOrderAsync(id);
+            if (order is null) return NotFound($"The order with id: {id} is not found.");
+
+            var updateOrderDto = new OrderDto
+            {
+                Id = order.Id,
+                TotalAmount = order.TotalAmount,
+                CustomerId = order.CustomerId,
+                OrderProducts = order.OrderProducts,
+                OrderDate = date
+            };
+
+            var result = await _orderService.PatchOrderAsync(id, updateOrderDto);
+            if (!result.IsSuccess) return BadRequest(result.Message);
+            return Ok();
+        }
+
+        [HttpDelete("delete-order/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            var result = await _orderService.DeleteOrderAsync(id);
+            if (!result.IsSuccess) return NotFound(result.Message);
             return Ok();
         }
     }

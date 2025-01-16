@@ -22,7 +22,7 @@ namespace ShoppingApp.Business.Operations.Order
             _productRepository = productRepository;
         }
 
-        public async Task<ServiceMessage> CreateOrderAsync(CreateOrderDto createOrderDto)
+        public async Task<ServiceMessage> CreateOrderAsync(OrderDto createOrderDto)
         {
             var totalAmount = createOrderDto.OrderProducts
                 .Select(op => _productRepository.GetById(op.Id).Price * op.Quantity)
@@ -77,7 +77,7 @@ namespace ShoppingApp.Business.Operations.Order
             };
         }
 
-        public async Task<OrderInfoDto> GetOrderAsync(int id)
+        public async Task<OrderInfoDto> GetOrderInfoAsync(int id)
         {
             var order = await _orderRepository.GetAll(o => o.Id == id)
                 .Include(o => o.Customer)
@@ -102,6 +102,27 @@ namespace ShoppingApp.Business.Operations.Order
             };
 
             return orderInfo;
+        }
+
+        public async Task<OrderDto> GetOrderAsync(int id)
+        {
+            var order = _orderRepository.GetById(id);
+            if (order == null) return null;
+
+            var orderDto = new OrderDto
+            {
+                Id = order.Id,
+                OrderDate = order.OrderDate,
+                TotalAmount = order.TotalAmount,
+                CustomerId = order.CustomerId,
+                OrderProducts = order.OrderProducts.Select(op => new CreateOrderProductDto
+                {
+                    Id = op.ProductId,
+                    Quantity = op.Quantity
+                }).ToList()
+            };
+
+            return orderDto;
         }
 
         public async Task<List<OrderInfoDto>> GetAllOrdersAsync()
@@ -166,6 +187,62 @@ namespace ShoppingApp.Business.Operations.Order
                 throw new Exception("An error occurred while updating the order.");
             }
 
+            return new ServiceMessage
+            {
+                IsSuccess = true
+            };
+        }
+
+        public async Task<ServiceMessage> PatchOrderAsync(int id, OrderDto orderDto)
+        {
+            var order = await _orderRepository.GetAll(o => o.Id == id).FirstOrDefaultAsync();
+            if (order == null)
+            {
+                return new ServiceMessage
+                {
+                    IsSuccess = false,
+                    Message = $"Order with id: {id} is not found."
+                };
+            }
+
+            order.OrderDate = orderDto.OrderDate;
+            _orderRepository.Update(order);
+            try
+            {
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw new Exception("An error occurred while updating the order.");
+            }
+
+            return new ServiceMessage
+            {
+                IsSuccess = true
+            };
+        }
+
+        public async Task<ServiceMessage> DeleteOrderAsync(int id)
+        {
+            var order = _orderRepository.GetById(id);
+            if (order == null)
+            {
+                return new ServiceMessage
+                {
+                    IsSuccess = false,
+                    Message = $"Order with id: {id} is not found."
+                };
+            }
+
+            _orderRepository.Delete(order);
+            try
+            {
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw new Exception("An error occurred while deleting the order.");
+            }
             return new ServiceMessage
             {
                 IsSuccess = true

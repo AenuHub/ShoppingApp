@@ -1,6 +1,6 @@
 ﻿namespace ShoppingApp.Business.Operations.Order.Dtos
 {
-    public class CreateOrderDto
+    public class OrderDto
     {
         public int Id { get; set; }
         public DateTime OrderDate { get; set; }
