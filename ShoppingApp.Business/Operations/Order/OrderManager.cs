@@ -162,6 +162,8 @@ namespace ShoppingApp.Business.Operations.Order
                 };
             }
 
+            await _unitOfWork.BeginTransactionAsync();
+
             var totalAmount = updateOrderDto.OrderProducts
                 .Select(op => _productRepository.GetById(op.Id))
                 .Where(product => product != null)
@@ -184,6 +186,7 @@ namespace ShoppingApp.Business.Operations.Order
             }
             catch (Exception)
             {
+                await _unitOfWork.RollbackTransactionAsync();
                 throw new Exception("An error occurred while updating the order.");
             }
 
