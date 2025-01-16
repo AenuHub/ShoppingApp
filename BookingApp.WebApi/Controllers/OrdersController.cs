@@ -26,7 +26,6 @@ namespace ShoppingApp.WebApi.Controllers
                 OrderDate = request.OrderDate,
                 TotalAmount = request.TotalAmount,
                 CustomerId = request.CustomerId,
-                Customer = request.Customer,
                 ProductIds = request.ProductIds
             };
 

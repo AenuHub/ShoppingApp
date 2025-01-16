@@ -11,35 +11,30 @@ namespace ShoppingApp.Business.Operations.Order
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<OrderEntity> _orderRepository;
         private readonly IRepository<OrderProductEntity> _orderProductRepository;
+        private readonly IRepository<ProductEntity> _productRepository;
 
-        public OrderManager(IUnitOfWork unitOfWork, IRepository<OrderEntity> orderRepository, IRepository<OrderProductEntity> orderProductRepository)
+        public OrderManager(IUnitOfWork unitOfWork, IRepository<OrderEntity> orderRepository, IRepository<OrderProductEntity> orderProductRepository, IRepository<ProductEntity> productRepository)
         {
             _unitOfWork = unitOfWork;
             _orderRepository = orderRepository;
             _orderProductRepository = orderProductRepository;
+            _productRepository = productRepository;
         }
 
         public async Task<ServiceMessage> CreateOrderAsync(CreateOrderDto createOrderDto)
         {
-            var order = _orderRepository.GetAll(o => o.Id == createOrderDto.Id).Any();
-
-            if (order)
-            {
-                return new ServiceMessage
-                {
-                    IsSuccess = false,
-                    Message = "Order already exists."
-                };
-            }
+            var totalAmount = createOrderDto.ProductIds
+                .Select(p => _productRepository.GetById(p).Price)
+                .Sum();
 
             await _unitOfWork.BeginTransactionAsync();
+
             var orderEntity = new OrderEntity
             {
                 Id = createOrderDto.Id,
                 OrderDate = createOrderDto.OrderDate,
-                TotalAmount = createOrderDto.TotalAmount,
-                CustomerId = createOrderDto.CustomerId,
-                Customer = createOrderDto.Customer
+                TotalAmount = totalAmount,
+                CustomerId = createOrderDto.CustomerId
             };
 
             _orderRepository.Add(orderEntity);

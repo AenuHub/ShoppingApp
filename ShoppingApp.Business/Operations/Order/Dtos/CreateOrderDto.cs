@@ -1,6 +1,4 @@
-﻿using ShoppingApp.Data.Entities;
-
-namespace ShoppingApp.Business.Operations.Order.Dtos
+﻿namespace ShoppingApp.Business.Operations.Order.Dtos
 {
     public class CreateOrderDto
     {
@@ -8,7 +6,6 @@ namespace ShoppingApp.Business.Operations.Order.Dtos
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
         public int CustomerId { get; set; }
-        public UserEntity Customer { get; set; }
         public List<int> ProductIds { get; set; }
     }
 }
