@@ -6,7 +6,7 @@ namespace ShoppingApp.Data.Repositories
     {
         void Add(TEntity entity);
         void Update(TEntity entity);
-        void Delete(TEntity entity);
+        void Delete(TEntity entity, bool softDelete = true);
         void Delete(int id);
         TEntity GetById(int id);
         TEntity Get(Expression<Func<TEntity, bool>> predicate);
