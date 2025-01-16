@@ -19,14 +19,12 @@ namespace ShoppingApp.Data.Repositories
         public void Add(TEntity entity)
         {
             _dbSet.Add(entity);
-            _context.SaveChanges();
         }
 
         public void Delete(TEntity entity)
         {
             entity.IsDeleted = true;
             _dbSet.Update(entity);
-            _context.SaveChanges();
         }
 
         public void Delete(int id)
@@ -56,7 +54,6 @@ namespace ShoppingApp.Data.Repositories
         public void Update(TEntity entity)
         {
             _dbSet.Update(entity);
-            _context.SaveChanges();
         }
     }
 }
