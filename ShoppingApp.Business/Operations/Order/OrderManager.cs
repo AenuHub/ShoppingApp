@@ -152,33 +152,27 @@ namespace ShoppingApp.Business.Operations.Order
 
         public async Task<ServiceMessage> UpdateOrderAsync(int id, UpdateOrderDto updateOrderDto)
         {
-            var order = await _orderRepository.GetAll(o => o.Id == id).FirstOrDefaultAsync();
+            var order = _orderRepository.GetAll(o => o.Id == updateOrderDto.Id)
+                .Include(o => o.OrderProducts)
+                .FirstOrDefault();
+
             if (order == null)
             {
                 return new ServiceMessage
                 {
                     IsSuccess = false,
-                    Message = $"Order with id: {id} is not found."
+                    Message = $"Order with id: {updateOrderDto.Id} is not found."
                 };
             }
 
             await _unitOfWork.BeginTransactionAsync();
 
+            // update the existing order
             var totalAmount = updateOrderDto.OrderProducts
-                .Select(op => _productRepository.GetById(op.Id))
-                .Where(product => product != null)
-                .Select(product => product.Price)
+                .Select(op => _productRepository.GetById(op.Id).Price * op.Quantity)
                 .Sum();
-
             order.TotalAmount = totalAmount;
             order.CustomerId = updateOrderDto.CustomerId;
-            order.OrderProducts = updateOrderDto.OrderProducts.Select(op => new OrderProductEntity
-            {
-                OrderId = order.Id,
-                ProductId = op.Id,
-            }).ToList();
-
-            _orderRepository.Update(order);
 
             try
             {
@@ -187,7 +181,37 @@ namespace ShoppingApp.Business.Operations.Order
             catch (Exception)
             {
                 await _unitOfWork.RollbackTransactionAsync();
-                throw new Exception("An error occurred while updating the order.");
+                throw new Exception("An error occurred while updating the order. Transaction rolled back.");
+            }
+
+            // update the orderProducts
+            foreach (var product in updateOrderDto.OrderProducts)
+            {
+                var existingOrderProduct = order.OrderProducts.FirstOrDefault(op => op.ProductId == product.Id);
+                if (existingOrderProduct != null)
+                {
+                    _orderProductRepository.Delete(existingOrderProduct, false);
+                }
+
+                var orderProduct = new OrderProductEntity
+                {
+                    OrderId = order.Id,
+                    ProductId = product.Id,
+                    Quantity = product.Quantity
+                };
+
+                _orderProductRepository.Add(orderProduct);
+            }
+
+            try
+            {
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw new Exception("An error occurred while updating the order. Transaction rolled back.");
             }
 
             return new ServiceMessage

@@ -51,12 +51,12 @@ namespace ShoppingApp.WebApi.Controllers
         }
 
         [HttpPut("update-order/{id}")]
-        [Authorize(Roles = "Customer,Admin")]
+        //[Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult> UpdateOrder(int id, UpdateOrderRequest request)
         {
             var updateOrderDto = new UpdateOrderDto
             {
-                Id = request.Id,
+                Id = id,
                 TotalAmount = request.TotalAmount,
                 CustomerId = request.CustomerId,
                 OrderProducts = request.OrderProducts
