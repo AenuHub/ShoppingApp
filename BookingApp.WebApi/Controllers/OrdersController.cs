@@ -17,6 +17,15 @@ namespace ShoppingApp.WebApi.Controllers
             _orderService = orderService;
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOrder(int id)
+        {
+            var result = await _orderService.GetOrderAsync(id);
+            if (result is null) return NotFound();
+            return Ok(result);
+        }
+
+
         [HttpPost("create-order")]
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult> CreateOrder(CreateOrderRequest request)

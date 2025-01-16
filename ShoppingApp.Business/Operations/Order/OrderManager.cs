@@ -1,4 +1,5 @@
-﻿using ShoppingApp.Business.Operations.Order.Dtos;
+﻿using Microsoft.EntityFrameworkCore;
+using ShoppingApp.Business.Operations.Order.Dtos;
 using ShoppingApp.Business.Types;
 using ShoppingApp.Data.Entities;
 using ShoppingApp.Data.Repositories;
@@ -73,6 +74,32 @@ namespace ShoppingApp.Business.Operations.Order
             {
                 IsSuccess = true
             };
+        }
+
+        public async Task<OrderInfoDto> GetOrderAsync(int id)
+        {
+            var order = await _orderRepository.GetAll(o => o.Id == id)
+                .Include(o => o.Customer)
+                .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                .FirstOrDefaultAsync();
+
+            if (order == null) return null;
+
+            var orderInfo = new OrderInfoDto
+            {
+                Id = order.Id,
+                OrderDate = order.OrderDate,
+                TotalAmount = order.TotalAmount,
+                CustomerName = $"{order.Customer.FirstName} {order.Customer.LastName}",
+                OrderProducts = order.OrderProducts.Select(op => new OrderProductDto
+                {
+                    Id = op.ProductId,
+                    ProductName = op.Product.ProductName
+                }).ToList()
+            };
+
+            return orderInfo;
         }
     }
 }
