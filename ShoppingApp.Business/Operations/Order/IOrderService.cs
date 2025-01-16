@@ -6,7 +6,7 @@ namespace ShoppingApp.Business.Operations.Order
     public interface IOrderService
     {
         Task<ServiceMessage> CreateOrderAsync(OrderDto createOrderDto);
-        Task<OrderInfoDto> GetOrderInfoAsync(int id); // Renamed to avoid conflict
+        Task<OrderInfoDto> GetOrderInfoAsync(int id);
         Task<OrderDto> GetOrderAsync(int id);
         Task<List<OrderInfoDto>> GetAllOrdersAsync();
         Task<ServiceMessage> UpdateOrderAsync(int id, UpdateOrderDto updateOrderDto);

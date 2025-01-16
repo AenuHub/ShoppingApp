@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ShoppingApp.Business.Operations.User;
 using ShoppingApp.Business.Operations.User.Dtos;
 using ShoppingApp.WebApi.Jwt;
@@ -81,13 +80,6 @@ namespace ShoppingApp.WebApi.Controllers
                 Message = "Login successful",
                 Token = token
             });
-        }
-
-        [HttpGet("me")]
-        [Authorize]
-        public async Task<IActionResult> GetMe()
-        {
-            return Ok();
         }
     }
 }
