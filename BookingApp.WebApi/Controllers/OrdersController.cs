@@ -96,5 +96,11 @@ namespace ShoppingApp.WebApi.Controllers
             if (!result.IsSuccess) return NotFound(result.Message);
             return Ok();
         }
+
+        [HttpGet("throw-exception")]
+        public IActionResult ThrowException()
+        {
+            throw new Exception("This is a test exception.");
+        }
     }
 }

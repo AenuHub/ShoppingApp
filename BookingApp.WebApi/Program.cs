@@ -84,6 +84,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMaintenanceMiddleware();
+
+// Custom exception handling middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
