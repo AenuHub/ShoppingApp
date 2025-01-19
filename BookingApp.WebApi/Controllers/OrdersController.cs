@@ -36,13 +36,12 @@ namespace ShoppingApp.WebApi.Controllers
         }
 
         [HttpPost("create-order")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult> CreateOrder(CreateOrderRequest request)
         {
             var createOrderDto = new OrderDto
             {
-                OrderDate = request.OrderDate,
-                TotalAmount = request.TotalAmount,
+                OrderDate = DateTime.Now,
                 CustomerId = request.CustomerId,
                 OrderProducts = request.OrderProducts
             };
