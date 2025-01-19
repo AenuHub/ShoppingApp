@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ShoppingApp.Business.Operations.Setting;
 
 namespace ShoppingApp.WebApi.Controllers
@@ -14,6 +15,7 @@ namespace ShoppingApp.WebApi.Controllers
         }
 
         [HttpPatch]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ToggleMaintenance()
         {
             await _settingService.ToggleMaintenanceAsync();
