@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ShoppingApp.Business.Operations.Order;
 using ShoppingApp.Business.Operations.Order.Dtos;
+using ShoppingApp.WebApi.Filters;
 using ShoppingApp.WebApi.Models;
 
 namespace ShoppingApp.WebApi.Controllers
@@ -52,6 +53,7 @@ namespace ShoppingApp.WebApi.Controllers
 
         [HttpPut("update-order/{id}")]
         [Authorize(Roles = "Customer,Admin")]
+        [TimeControlFilter]
         public async Task<IActionResult> UpdateOrder(int id, UpdateOrderRequest request)
         {
             var updateOrderDto = new UpdateOrderDto

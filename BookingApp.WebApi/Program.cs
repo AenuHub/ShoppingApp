@@ -11,6 +11,7 @@ using ShoppingApp.Business.Operations.User;
 using ShoppingApp.Data.Context;
 using ShoppingApp.Data.Repositories;
 using ShoppingApp.Data.UnitOfWork;
+using ShoppingApp.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +83,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMaintenanceMiddleware();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

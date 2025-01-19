@@ -3,5 +3,6 @@
     public interface ISettingService
     {
         Task ToggleMaintenanceAsync();
+        bool GetMaintenanceState();
     }
 }

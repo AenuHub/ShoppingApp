@@ -15,6 +15,11 @@ namespace ShoppingApp.Business.Operations.Setting
             _settingRepository = settingRepository;
         }
 
+        public bool GetMaintenanceState()
+        {
+            return _settingRepository.GetById(1).MaintenanceMode;
+        }
+
         public async Task ToggleMaintenanceAsync()
         {
             var setting = _settingRepository.GetById(1);
