@@ -57,37 +57,37 @@ The solution is organized into the following projects:
    dotnet run --project ShoppingApp.WebApi
    ```
 
-The API will be accessible at `https://localhost:5001`.
-
 ## API Endpoints
 
 ### Authentication
 
-- **POST** `/api/auth/register`: Register a new user.
-- **POST** `/api/auth/login`: Authenticate and receive a JWT.
+- **POST** `/api/Auth/register`: Register a new user.
+- **POST** `/api/Auth/login`: Login/Authenticate and receive a JWT.
 
 ### Products
-
-- **GET** `/api/products`: Retrieve all products.
-- **GET** `/api/products/{id}`: Retrieve a product by ID.
-- **POST** `/api/products`: Create a new product.
-- **PUT** `/api/products/{id}`: Update an existing product.
-- **DELETE** `/api/products/{id}`: Delete a product.
+- **POST** `/api/Products/add-product`: Create a new product.
 
 ### Orders
 
-- **GET** `/api/orders`: Retrieve all orders.
-- **GET** `/api/orders/{id}`: Retrieve an order by ID.
-- **POST** `/api/orders`: Create a new order.
-- **PUT** `/api/orders/{id}`: Update an order.
-- **DELETE** `/api/orders/{id}`: Delete an order.
+- **GET** `/api/Orders/all-orders`: Retrieve all orders.
+- **GET** `/api/Orders/{id}`: Retrieve an order by ID.
+- **POST** `/api/Orders/create-order`: Create a new order.
+- **PUT** `/api/Orders/update-order/{id}`: Update an order using ID.
+- **PATCH** `/api/Orders/patch-order/{id}`: Patch an order using ID.
+- **DELETE** `/api/Orders/delete-order/{id}`: Delete an order.
+
+### Settings
+- **PATCH** `/api/Settings`: Toggle maintenance mode on/off.
 
 ## Middleware
 
 The application includes custom middleware for:
 
-- **Logging**: Capturing request and response information.
+- **Maintenance Mode**: Putting system into maintenance mode by enabling/disabling entire system.
 - **Exception Handling**: Centralized error handling and response formatting.
+
+## Action Filter
+Action filter is used for handling time values for accessing only permitted endpoints between the set time values.
 
 ## Model Validation
 
