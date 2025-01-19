@@ -13,6 +13,7 @@ namespace ShoppingApp.Data.Context
         public DbSet<ProductEntity> Products { get; set; }
         public DbSet<OrderEntity> Orders { get; set; }
         public DbSet<OrderProductEntity> OrderProducts { get; set; }
+        public DbSet<SettingEntity> Settings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -42,6 +43,13 @@ namespace ShoppingApp.Data.Context
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new OrderProductConfiguration());
+
+            modelBuilder.Entity<SettingEntity>()
+                .HasData(new SettingEntity
+                {
+                    Id = 1,
+                    MaintenanceMode = false
+                });
 
             base.OnModelCreating(modelBuilder);
         }

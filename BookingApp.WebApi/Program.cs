@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using ShoppingApp.Business.DataProtection;
 using ShoppingApp.Business.Operations.Order;
 using ShoppingApp.Business.Operations.Product;
+using ShoppingApp.Business.Operations.Setting;
 using ShoppingApp.Business.Operations.User;
 using ShoppingApp.Data.Context;
 using ShoppingApp.Data.Repositories;
@@ -70,6 +71,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserManager>();
 builder.Services.AddScoped<IProductService, ProductManager>();
 builder.Services.AddScoped<IOrderService, OrderManager>();
+builder.Services.AddScoped<ISettingService, SettingManager>();
 
 var app = builder.Build();
 
