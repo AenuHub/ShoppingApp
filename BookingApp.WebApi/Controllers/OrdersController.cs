@@ -43,7 +43,7 @@ namespace ShoppingApp.WebApi.Controllers
                 OrderDate = request.OrderDate,
                 TotalAmount = request.TotalAmount,
                 CustomerId = request.CustomerId,
-                OrderProducts = (ICollection<CreateOrderProductDto>)request.OrderProducts
+                OrderProducts = request.OrderProducts
             };
 
             var result = await _orderService.CreateOrderAsync(createOrderDto);
@@ -57,8 +57,6 @@ namespace ShoppingApp.WebApi.Controllers
             var updateOrderDto = new UpdateOrderDto
             {
                 Id = id,
-                TotalAmount = request.TotalAmount,
-                CustomerId = request.CustomerId,
                 OrderProducts = request.OrderProducts
             };
 

@@ -154,6 +154,7 @@ namespace ShoppingApp.Business.Operations.Order
         {
             var order = _orderRepository.GetAll(o => o.Id == updateOrderDto.Id)
                 .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
                 .FirstOrDefault();
 
             if (order == null)
@@ -172,7 +173,6 @@ namespace ShoppingApp.Business.Operations.Order
                 .Select(op => _productRepository.GetById(op.Id).Price * op.Quantity)
                 .Sum();
             order.TotalAmount = totalAmount;
-            order.CustomerId = updateOrderDto.CustomerId;
 
             try
             {
@@ -184,15 +184,15 @@ namespace ShoppingApp.Business.Operations.Order
                 throw new Exception("An error occurred while updating the order. Transaction rolled back.");
             }
 
-            // update the orderProducts
+            // hard delete the products of the order
+            foreach (var product in order.OrderProducts)
+            {
+                _orderProductRepository.Delete(product, false);
+            }
+
+            // update the products of the order
             foreach (var product in updateOrderDto.OrderProducts)
             {
-                var existingOrderProduct = order.OrderProducts.FirstOrDefault(op => op.ProductId == product.Id);
-                if (existingOrderProduct != null)
-                {
-                    _orderProductRepository.Delete(existingOrderProduct, false);
-                }
-
                 var orderProduct = new OrderProductEntity
                 {
                     OrderId = order.Id,
